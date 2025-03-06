@@ -1,0 +1,7 @@
+.env
+tmp/
+node_modules
+.rws.json
+frontend/public/js/*
+frontend/public/css/*
+@dev
