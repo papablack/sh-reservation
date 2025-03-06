@@ -53,13 +53,8 @@ export class TaskService {
         }else{
             booking = await Booking.findOneBy({ conditions: { reservation_id: resData.reservation_id } });
 
-            if(booking){
-                booking.reservation_id = resData.reservation_id;
-                booking.guest_name = resData.guest_name;
-                booking.status = resData.status;
-                booking.check_in_date = resData.check_in_date;        
-                booking.check_out_date = resData.check_out_date;        
-
+            if(booking){        
+                booking._fill(resData);
                 await booking.save();
             }
         }        
