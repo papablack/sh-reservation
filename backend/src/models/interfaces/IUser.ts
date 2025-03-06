@@ -1,6 +1,6 @@
 import IApiKey from "./IApiKey";
 
-interface IUser {
+export interface IUser {
   id?: string
   username: string
   passwd: string
@@ -9,5 +9,3 @@ interface IUser {
   active: boolean
   apiKeys?: IApiKey[]
 }
-
-export default IUser;

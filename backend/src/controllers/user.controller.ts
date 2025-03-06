@@ -1,6 +1,6 @@
 import { IUserCreateApiPayload, IUserCreateApiResponse, IUserDeleteApiResponse, IUserListApiResponse, IUserCreateKeyApiResponse } from './response-types/IUserApiResponse';
 import { Body } from '@nestjs/common';
-import IUser from '../models/interfaces/IUser';
+import {IUser} from '../models/interfaces/IUser';
 import { Param } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { AuthService } from '../services/AuthService';

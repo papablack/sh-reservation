@@ -1,17 +1,23 @@
 import {  IPrefixedHTTProutes } from '@rws-framework/server/src/routing/routes';
 import { homeRoutes } from './actions/homeActions';
 import { userRoutes } from './actions/userActions';
-
+import { taskRoutes } from './actions/taskActions';
 
 export default [
     {
-        prefix: '/api',
+        prefix: '/',
         controllerName: 'home',
         routes: homeRoutes
     },
     {
-        prefix: '/api/users',
+        prefix: '/users',
         controllerName: 'user',
         routes: userRoutes
+    },
+    {
+        prefix: '/task',
+        controllerName: 'task',
+        exportAutoRoutes: true,
+        routes: taskRoutes
     }
 ] as IPrefixedHTTProutes[];

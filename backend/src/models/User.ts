@@ -1,10 +1,10 @@
 import { TrackType, InverseRelation, RWSModel, RWSCollection } from '@rws-framework/db';
 
-import IUser from './interfaces/IUser';
+import {IUser} from './interfaces/IUser';
 import 'reflect-metadata';
 
 import ApiKey from './ApiKey';
-import IApiKey from './interfaces/IApiKey';
+import {IApiKey} from './interfaces/IApiKey';
 import { RWSResource } from '@rws-framework/server';
 
 @RWSResource('sh.user')

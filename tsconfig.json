@@ -22,8 +22,7 @@
     "node_modules/@rws-framework/nest-interconnectors",
     "node_modules/@rws-framework/server",
     "node_modules/@rws-framework/db",
-    "backend/src",
-    "node_modules/@rws-framework/ai-tools"
+    "backend/src"    
   ],
   "exclude": []
 }

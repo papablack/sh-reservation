@@ -14,6 +14,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { NotFoundExceptionFilter } from '../filters/not-found.filter';
 import { NestModuleData } from '@rws-framework/server/exec/src/application/cli.module';
 import { AdminStartCommand } from '../commands/adminadd.command';
+import { TaskController } from '../controllers/task.controller';
 
 
 @Module({})
@@ -26,7 +27,8 @@ export class TheAppModule {
       imports: processedImports,
       controllers:[
         HomeController,   
-        UserController
+        UserController,
+        TaskController
       ],
       providers: [
         AuthService, 

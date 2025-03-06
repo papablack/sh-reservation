@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import User from './User';
-import IApiKey from './interfaces/IApiKey';
+import {IApiKey} from './interfaces/IApiKey';
 import { TrackType, Relation, RWSModel, RWSCollection } from '@rws-framework/db';
 import { RWSResource } from '@rws-framework/server';
 
