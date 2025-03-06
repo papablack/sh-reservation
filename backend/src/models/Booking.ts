@@ -4,24 +4,25 @@ import { RWSResource } from '@rws-framework/server';
 import 'reflect-metadata';
 import {BookingStatus, IBooking} from './interfaces/IBooking';
 import User from './User';
+import Task from './Task';
+import { BookingDTO } from './dto/booking.dto';
 
 @RWSResource('sh.booking')
-@RWSCollection('booking')
+@RWSCollection('booking', { relations: { assignee: true } })
 class Booking extends RWSModel<Booking> implements IBooking {
-    static _collection = 'bookings';
-
-    static _RELATIONS = {
-        assignee: true
-    };
-
-    @TrackType(String)
-    reservationId: string;
+    static BookingStatus = BookingStatus;
+    
+    @TrackType(Number)
+    reservation_id: number;
 
     @TrackType(String)
-    guestName: string;
+    guest_name: string;
 
     @TrackType(String)
     status: BookingStatus;
+
+    @Relation(() => Task)
+    fromTask: Task
 
     @Relation(() => User, { required: true, cascade: { onDelete: 'Cascade', onUpdate: 'Cascade' } })
     assignee: User;
@@ -38,7 +39,7 @@ class Booking extends RWSModel<Booking> implements IBooking {
     @TrackType(Date)
     updated_at: Date;
 
-    constructor(data?: IBooking) {   
+    constructor(data?: BookingDTO) {   
         super(data);    
 
         if(!this.created_at){
@@ -46,10 +47,6 @@ class Booking extends RWSModel<Booking> implements IBooking {
         }    
 
         this.updated_at = new Date();
-
-        if(!this.status) {
-            this.status = BookingStatus.PENDING;
-        }
     }    
 
     // Metody pomocnicze możemy zostawić

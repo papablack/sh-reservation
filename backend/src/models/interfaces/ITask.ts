@@ -1,10 +1,7 @@
+import { IReservationData } from "../../services/XLSService";
+import { BookingDTO } from "../dto/booking.dto";
 import { IUser } from "../interfaces/IUser";
 
-export enum TaskPriority {
-    LOW = 'LOW',
-    MEDIUM = 'MEDIUM',
-    HIGH = 'HIGH'
-}
 
 export enum TaskStatus {
     AWAITING = 'awaiting',
@@ -14,13 +11,10 @@ export enum TaskStatus {
 
 export interface ITask {
     id?: string;
-    title: string;
-    description: string;
-    reservationId: string;
-    priority: TaskPriority;
-    status: TaskStatus;
-    assignee: IUser;
-    due_date?: Date;
-    created_at: Date;
-    updated_at: Date;
+    fileName: string;
+    originalFileName: string;
+    status?: TaskStatus;
+    assignee: IUser;    
+    created_at?: Date;
+    updated_at?: Date;
 }

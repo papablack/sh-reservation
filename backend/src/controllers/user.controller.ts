@@ -74,7 +74,7 @@ export class UserController {
 
       const user: User = await User.find(id);         
 
-      const keyModel: ApiKey = new ApiKey({ keyval: 're-' + uuid() });
+      const keyModel: ApiKey = new ApiKey({ keyval: 'sh-' + uuid() });
       keyModel.user = user;
       
       await keyModel.save();            

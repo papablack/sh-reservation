@@ -6,6 +6,8 @@ import 'reflect-metadata';
 import ApiKey from './ApiKey';
 import {IApiKey} from './interfaces/IApiKey';
 import { RWSResource } from '@rws-framework/server';
+import Task from './Task';
+import Booking from './Booking';
 
 @RWSResource('sh.user')
 @RWSCollection('user', {
@@ -29,6 +31,12 @@ class User extends RWSModel<User> implements IUser {
   
     @TrackType(Date)
     updated_at: Date;
+
+    @InverseRelation(() => Task, () => User)
+    tasks: Task[]
+
+    @InverseRelation(() => Booking, () => User)
+    bookings: Booking[]
 
     @InverseRelation(() => ApiKey, () => User)
     apiKeys: IApiKey[];

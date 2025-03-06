@@ -1,5 +1,5 @@
-import IApiKey from "../../models/interfaces/IApiKey"
-import IUser from "../../models/interfaces/IUser"
+import {IApiKey} from "../../models/interfaces/IApiKey"
+import {IUser} from "../../models/interfaces/IUser"
 
 export interface IUserListApiResponse {
     data: IUser[]

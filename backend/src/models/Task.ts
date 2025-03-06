@@ -1,42 +1,37 @@
-import { TrackType, Relation, RWSModel, RWSCollection } from '@rws-framework/db';
+import { TrackType, Relation, RWSModel, RWSCollection, InverseRelation } from '@rws-framework/db';
 import { RWSResource } from '@rws-framework/server';
 import { ITask, TaskPriority, TaskStatus } from './interfaces/ITask';
 import User from './User';
 import 'reflect-metadata';
+import Booking from './Booking';
+import { IReservationData } from '../services/XLSService';
+import { BookingDTO } from './dto/booking.dto';
 
 @RWSResource('sh.task')
-@RWSCollection('task', {
-    relations: {
-        assignee: true
-    }
-})
+@RWSCollection('task', { relations: { assignee: true } })
 export default class Task extends RWSModel<Task> implements ITask {
-    @TrackType(String)
-    title: string;
+    static TaskStatus = TaskStatus;
 
     @TrackType(String)
-    reservationId: string;
+    status: TaskStatus = TaskStatus.AWAITING;
 
-    @TrackType(String)
-    description: string;
-
-    @TrackType(String)
-    priority: TaskPriority;
-
-    @TrackType(String)
-    status: TaskStatus;
+    @InverseRelation(() => Booking, () => Task)
+    bookings: Booking[] = []
 
     @Relation(() => User, { required: true, cascade: { onDelete: 'Cascade', onUpdate: 'Cascade' } })
     assignee: User;
-
-    @TrackType(Date)
-    due_date?: Date;
 
     @TrackType(Date, { required: true })
     created_at: Date;
   
     @TrackType(Date)
     updated_at: Date;    
+
+    @TrackType(String)
+    fileName: string;
+
+    @TrackType(String)
+    originalFileName: string;
 
     constructor(data?: ITask) {   
         super(data);    
@@ -46,13 +41,5 @@ export default class Task extends RWSModel<Task> implements ITask {
         }    
 
         this.updated_at = new Date();
-
-        if (!this.status) {
-            this.status = TaskStatus.TODO;
-        }
-
-        if (!this.priority) {
-            this.priority = TaskPriority.MEDIUM;
-        }
     }    
 }

@@ -1,4 +1,4 @@
-import IUser from "../../models/interfaces/IUser"
+import {IUser} from "../../models/interfaces/IUser"
 
 export interface IUserLoginApiResponse {
     success: boolean,
