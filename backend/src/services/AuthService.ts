@@ -1,7 +1,7 @@
 // deepgram-live.service.ts
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import IUser from '../models/interfaces/IUser';
+import {IUser} from '../models/interfaces/IUser';
 import User from '../models/User';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
