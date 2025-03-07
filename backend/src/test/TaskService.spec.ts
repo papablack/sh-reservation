@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskService } from '../services/TaskService';
 import { XLSService, IXLSXProcessError } from '../services/XLSService';
 import { FileStorageService } from '../services/FileStorageService';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import Task from '../models/Task';
 import Booking from '../models/Booking';
 import User from '../models/User';
@@ -113,11 +114,16 @@ describe('TaskService', () => {
       getFilePath: jest.fn()
     };
 
+    const mockEventEmitter = {
+      emit: jest.fn()
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TaskService,
         { provide: XLSService, useValue: mockXlsService },
-        { provide: FileStorageService, useValue: mockFileService }
+        { provide: FileStorageService, useValue: mockFileService },
+        { provide: EventEmitter2, useValue: mockEventEmitter }
       ],
     }).compile();
 

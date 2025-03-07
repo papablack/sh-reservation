@@ -3,7 +3,16 @@
     "private": true,
     "version": "1.0.0",
     "description": "",
-    "scripts": {},
+    "scripts": {
+        "build": "yarn rws build",
+        "build:front": "yarn rws build front",
+        "build:back": "yarn rws build back",
+        "build:cli": "yarn rws build cli",
+        "watch:front": "yarn rws build front --watch",
+        "watch:back": "yarn rws build back --watch",
+        "postinstall": "yarn rws cli init --build --reload",
+        "run": "yarn rws run back"
+    },
     "author": "papablack",
     "license": "ISC",
     "workspaces": [
@@ -12,7 +21,7 @@
         "docs"
     ],
     "dependencies": {
-        "@rws-framework/manager": "^2.2.9",
+        "@rws-framework/manager": "^2.2.10",
         "@rws-framework/nest-interconnectors": "^1.3.5",
         "concurrently": "^9.1.2",
         "global": "^4.4.0",
