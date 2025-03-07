@@ -9,10 +9,7 @@ import { FileStorageService } from './FileStorageService';
 @Injectable()
 export class TaskService {
     private logger = new Logger(this.constructor.name);
-
-    constructor(private xlsService: XLSService, private fileService: FileStorageService){
-
-    }
+    constructor(private xlsService: XLSService, private fileService: FileStorageService){}
 
     async makeTask(fileName: string, originalFileName: string, user: User): Promise<Task>
     {
@@ -61,12 +58,14 @@ export class TaskService {
             booking.fromTask = task;
             
             await booking.save();
+            this.logger.debug(`Created booking entry with reservation_id: "${booking.reservation_id}"`);
         }else{
             booking = await Booking.findOneBy({ conditions: { reservation_id: resData.reservation_id } });
 
             if(booking){        
                 booking._fill(resData);
                 await booking.save();
+                this.logger.debug(`Updated booking entry with reservation_id: "${booking.reservation_id}"`);
             }
         }        
 

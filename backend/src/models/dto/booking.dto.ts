@@ -27,8 +27,17 @@ export class BookingDTO {
     @IsNotEmpty()
     reservation_id: number;
 
-    @IsEnum(TaskStatus)
+    @IsEnum(BookingStatus)
     @IsNotEmpty()
+    @Transform(({ value }) => {
+        if (!value) {
+            throw new Error('Status is required');
+        }
+        if (!Object.values(BookingStatus).includes(value)) {
+            throw new Error(`Invalid status. Must be one of: ${Object.values(BookingStatus).join(', ')}`);
+        }
+        return value;
+    })
     status: BookingStatus;
 
     @IsDate()
