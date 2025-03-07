@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskService } from '../services/TaskService';
-import { XLSService, IXLSXProcessError } from '../services/XLSService';
+import { XLSService, IXLSXProcessError, XLSFileResults } from '../services/XLSService';
 import { FileStorageService } from '../services/FileStorageService';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import Task from '../models/Task';
@@ -156,7 +156,7 @@ describe('TaskService', () => {
     it('should process an XLSX file and create bookings', async () => {
       const taskId = '1337hireme';
       const filePath = '/path/to/file.xlsx';
-      const xlsData = {
+      const xlsData: XLSFileResults = {
         results: [
           {
             reservation_id: 456,
@@ -164,9 +164,9 @@ describe('TaskService', () => {
             status: BookStatusEnum.AWAITING,
             check_in_date: new Date(),
             check_out_date: new Date(Date.now() + 86400000) // tomorrow
-          } as BookingDTO
+          }
         ],
-        errors: [] as IXLSXProcessError[]
+        errors: []
       };
 
       jest.spyOn(fileService, 'getFilePath').mockReturnValue(filePath);
@@ -208,7 +208,7 @@ describe('TaskService', () => {
         status: BookStatusEnum.AWAITING,
         check_in_date: new Date(),
         check_out_date: new Date(Date.now() + 86400000) // tomorrow
-      } as BookingDTO;
+      };
 
       const result = await service.processReservations(resData, task);
 
@@ -230,7 +230,7 @@ describe('TaskService', () => {
         status: BookStatusEnum.CANCELLED,
         check_in_date: new Date(),
         check_out_date: new Date(Date.now() + 86400000) // tomorrow
-      } as BookingDTO;
+      };
 
       const result = await service.processReservations(resData, task);
 
@@ -251,7 +251,7 @@ describe('TaskService', () => {
         status: BookStatusEnum.CANCELLED,
         check_in_date: new Date(),
         check_out_date: new Date(Date.now() + 86400000)
-      } as BookingDTO;
+      };
 
       jest.spyOn(Booking, 'findOneBy').mockResolvedValueOnce(null);
 
