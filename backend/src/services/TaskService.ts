@@ -30,14 +30,25 @@ export class TaskService {
     async runTask(taskId: string): Promise<void>
     {
         const task = await Task.find(taskId);
-        
-        const xlsData = await this.xlsService.processXLSXFile(this.fileService.getFilePath(task.fileName));
-        for (const resData of xlsData.results.map(parseBooking))
-        {            
-            await this.processReservations(resData, task);
-        }
+        try {
+            const xlsData = await this.xlsService.processXLSXFile(this.fileService.getFilePath(task.fileName));
 
-        task.status = Task.TaskStatus.DONE;
+            for (const resData of xlsData.results)
+            {                            
+                await this.processReservations(resData, task);
+            }
+
+            task.errors = xlsData.errors;
+            task.status = Task.TaskStatus.DONE;
+
+            await task.save();
+        }catch(e: Error | any){
+            task.errors = [{
+                row: -1,
+                error: e.message                
+            }];
+            await task.save();
+        }
     }
 
     async processReservations(resData: BookingDTO, task: Task): Promise<Booking | null>

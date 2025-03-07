@@ -2,11 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { createReadStream } from 'fs';
 //@ts-ignore
 import xlsxParseStream  from 'xlsx-parse-stream';
+import { BookingDTO, parseBooking } from '../models/dto/booking.dto';
 
 export interface IXLSXProcessError {
     row: number,
-    error: string,
-    suggestion: string
+    error: string
 }
 
 export interface IReservationData {
@@ -21,13 +21,13 @@ export interface IReservationData {
 export class XLSService {
     private logger = new Logger(this.constructor.name);
 
-    async processXLSXFile(filePath: string): Promise<{results: IReservationData[], errors: IXLSXProcessError[]}> {
+    async processXLSXFile(filePath: string): Promise<{results: BookingDTO[], errors: IXLSXProcessError[]}> {
         const errors: IXLSXProcessError[] = [];
         let rowNumber = 0;        
 
         try {
             return new Promise((resolve, reject) => {
-                const results: IReservationData[] = [];
+                const results: BookingDTO[] = [];
                 const parser = xlsxParseStream({
                     mapHeaders: (header: any) => String(header).toLowerCase().trim(),
                     mapValues: (value: any) => value === null ? undefined : value
@@ -49,12 +49,12 @@ export class XLSService {
                 parser.on('data', (row: Record<string, any>) => {
                     rowNumber++;
                     try {                                                                   
-                        results.push(row as IReservationData);
+                        results.push(parseBooking(row));
                     } catch (error: any) {
+                        this.logger.warn(`Error processing row ${rowNumber}: ${error.message}`);
                         errors.push({
                             row: rowNumber,
-                            error: error.message,
-                            suggestion: 'Please check the data format'
+                            error: error.message
                         });
                     }
                 });
@@ -65,7 +65,7 @@ export class XLSService {
                 });
     
                 parser.on('end', () => {
-                    this.logger.debug(`Processed ${results.length} rows with ${errors.length} errors`);                    
+                    this.logger.debug(`Processed ${results.length} / ${rowNumber} rows with ${errors.length} errors`);                    
                     resolve({results, errors});
                 });
     

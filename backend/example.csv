@@ -1,4 +1,0 @@
-reservation_id,guest_name,status,check_in_date,check_out_date
-12345,Jan Nowak,oczekująca,2024-05-01,2024-05-07
-12346,Anna Kowal,anulowana,2024-06-10,2024-06-15
-12347,Adam Wiśniewski,zrealizowana,2024-04-20,2024-04-27

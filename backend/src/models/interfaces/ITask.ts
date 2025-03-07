@@ -1,7 +1,5 @@
-import { IReservationData } from "../../services/XLSService";
-import { BookingDTO } from "../dto/booking.dto";
+import { IXLSXProcessError } from "../../services/XLSService";
 import { IUser } from "../interfaces/IUser";
-
 
 export enum TaskStatus {
     AWAITING = 'awaiting',
@@ -14,7 +12,8 @@ export interface ITask {
     fileName: string;
     originalFileName: string;
     status?: TaskStatus;
-    assignee: IUser;    
+    assignee: IUser;
+    errors?: IXLSXProcessError[]
     created_at?: Date;
     updated_at?: Date;
 }

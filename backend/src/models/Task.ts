@@ -1,11 +1,10 @@
 import { TrackType, Relation, RWSModel, RWSCollection, InverseRelation } from '@rws-framework/db';
 import { RWSResource } from '@rws-framework/server';
-import { ITask, TaskPriority, TaskStatus } from './interfaces/ITask';
+import { ITask, TaskStatus } from './interfaces/ITask';
 import User from './User';
 import 'reflect-metadata';
 import Booking from './Booking';
-import { IReservationData } from '../services/XLSService';
-import { BookingDTO } from './dto/booking.dto';
+import { IXLSXProcessError } from '../services/XLSService';
 
 @RWSResource('sh.task')
 @RWSCollection('task', { relations: { assignee: true } })
@@ -32,6 +31,9 @@ export default class Task extends RWSModel<Task> implements ITask {
 
     @TrackType(String)
     originalFileName: string;
+
+    @TrackType(Array)
+    errors: IXLSXProcessError[] = [];
 
     constructor(data?: ITask) {   
         super(data);    
