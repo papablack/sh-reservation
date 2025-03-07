@@ -23,7 +23,6 @@ export default [
     {
         prefix: '/task',
         controllerName: 'task',
-        exportAutoRoutes: true,
         routes: taskRoutes
     }
 ] as IPrefixedHTTProutes[];

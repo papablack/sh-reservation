@@ -6,7 +6,6 @@ import 'reflect-metadata';
 import Booking from './Booking';
 import { IXLSXProcessError } from '../services/XLSService';
 
-@RWSResource('sh.task')
 @RWSCollection('task', { relations: { assignee: true } })
 export default class Task extends RWSModel<Task> implements ITask {
     static TaskStatus = TaskStatus;
