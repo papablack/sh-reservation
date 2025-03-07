@@ -1,0 +1,25 @@
+<div class="task">
+  <sl-card class="card-header">
+    <div slot="header">
+      <strong>Task ID</strong>: ${x => x.task.id}
+    </div>
+  
+    <sl-badge variant="${x => x.status === 'done' ? 'success' : 'warning'}">${x => x.task.status}</sl-badge>
+    <br/>
+    <strong>${x => x.formatDate(x.task.created_at)}</strong>
+
+    ${when(x => x.task.errors.length, html`<div class="task-errors">
+      <sl-details summary="Errors">
+        <ul>
+          ${repeat(x => x.task.errors, html`
+            <li>
+              <strong>Row</strong>: ${x => x.row}<br />
+              <strong>Message</strong>: ${x => x.error}
+            </li>  
+          `)}
+        </ul>
+      </sl-details>
+    </div>`)}
+  </sl-card>
+</div>
+

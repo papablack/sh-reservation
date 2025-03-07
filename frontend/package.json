@@ -7,7 +7,7 @@
     "license": "ISC",
     "dependencies": {
         "@rws-framework/browser-router": "^0.3.6",
-        "@rws-framework/client": "2.18.2",
+        "@rws-framework/client": "2.15.6",
         "@shoelace-style/shoelace": "^2.19.1",
         "@types/jsoneditor": "^9.9.5",
         "@types/uuid": "^9.0.7",

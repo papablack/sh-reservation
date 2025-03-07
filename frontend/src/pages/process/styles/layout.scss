@@ -9,7 +9,8 @@ section{
     border: $main_color 1px solid;
     border-radius: 10px;
 
-    h1{
-        color: $main_color;
+    #processing{
+        background-color: #FFF;
+        padding: 15px;
     }
 }

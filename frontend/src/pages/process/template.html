@@ -1,0 +1,14 @@
+<section>
+    <div id="processing">
+        <label for="file">XLSX file</label>
+
+        <input id="xlsxFile" type="file" />
+
+        <sl-button @click="${x => x.sendFile()}" variant="primary">SEND</sl-button>
+
+        ${when(x => x.listening, html`<div id="listener">
+            <show-task :task="${ x => x.task }"></show-task>
+        </div>`)}
+    </div>
+    
+</section>
