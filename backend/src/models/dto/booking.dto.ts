@@ -1,8 +1,6 @@
-import { IsString, IsEnum, IsOptional, IsDate, IsNotEmpty, IsUUID, IsNumber } from 'class-validator';
+import { IsString, IsEnum, IsDate, IsNotEmpty, IsNumber } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { TaskStatus } from '../interfaces/ITask';
 import { plainToClass } from 'class-transformer';
-import { IReservationData } from 'backend/src/services/XLSService';
 import { BookingStatus } from '../interfaces/IBooking';
 
 export class BookingDTO {

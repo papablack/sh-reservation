@@ -15,6 +15,12 @@ export default [
         routes: userRoutes
     },
     {
+        prefix: '/booking',
+        controllerName: 'booking',
+        exportAutoRoutes: true,
+        routes: []
+    },
+    {
         prefix: '/task',
         controllerName: 'task',
         exportAutoRoutes: true,

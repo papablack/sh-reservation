@@ -1,65 +1,47 @@
-import {
-  WebSocketServer,
-  SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
-} from '@nestjs/websockets';
-
 import { Socket } from 'socket.io';
-import { RWSJSONMessage, RWSGateway, RWSFillService } from '@rws-framework/server';
-import { ConfigService } from '@nestjs/config';
-
-import { IWSData, IWSResponse } from './response-types/IWSGateWay';
-import { WebsocketManagerService } from '@rws-framework/nest-interconnectors/src/backend/services/WebsocketManagerService';
+import {  RWSGateway } from '@rws-framework/server';
 import { Injectable } from '@rws-framework/server/nest';
+import Task from '../models/Task';
+import { OnEvent } from '@nestjs/event-emitter';
+import { Logger } from '@nestjs/common';
+
 
 
 @Injectable()
 export class WSGateway extends RWSGateway {
-  constructor(
-    public appConfigService: ConfigService,
-    public rwsFillService: RWSFillService,    
-    public wsManagerService: WebsocketManagerService  
-  ) {
-    super(appConfigService, rwsFillService);
+  private logger = new Logger(this.constructor.name);
+  @OnEvent('task.added')
+  handleTaskAdded(task: Task): void {
+    this.sendTaskInfo(task);
   }
 
-  @SubscribeMessage('ws_message_event_name')
-  async handleChat(
-    @MessageBody() dataString: string,
-    @ConnectedSocket() socket: Socket,
-  ): Promise<void> {
-    const jsonData: RWSJSONMessage = this.getJson(dataString);    
-    const payload: IWSData = jsonData.msg;
-    const wsId: string | null | undefined = payload.wsId;
-
-    if(!wsId){
-      return;
-    }
-
-    try {  
-      // Send response
-      this.emitMessage<IWSResponse>('ws_response_event_name' + wsId, socket, {
-        success: true,
-        data: {
-          wsId: wsId
-        }
-      });      
-    } catch (error) {
-      console.error('Error in gateway message:', error);
-      this.throwError('ws_response_error_' + wsId, socket, error);
-    }
+  @OnEvent('task.processed')
+  handleTaskProcessed(task: Task): void {
+    this.sendTaskInfo(task);
   }
 
-  sendFile(): void
-  {
+  sendTaskInfo(task: Task): void
+  {    
+    const eventName = `task-status`;
+
+    const sanitizedTask = {
+      id: task.id,
+      status: task.status,
+      fileName: task.fileName,
+      originalFileName: task.originalFileName,
+      errors: task.errors,
+      created_at: task.created_at?.toISOString(),
+      updated_at: task.updated_at?.toISOString(),
+    };
+
+    this.server.emit(eventName, JSON.stringify({ method: eventName, data: sanitizedTask }));
+    this.logger.debug(`Task sent on event "${eventName}"`);
 
   }
 
   handleConnection(socket: Socket): void {
-    this.wsManagerService.addClient(socket);    
   }
 
   handleDisconnect(socket: Socket): void {   
   }
-}  
+}

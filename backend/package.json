@@ -6,14 +6,22 @@
     "main": "src/index.ts",
     "author": "papablack",
     "license": "ISC",
+    "scripts": {
+        "test": "jest"
+    },
     "dependencies": {
         "@nestjs/bullmq": "^11.0.2",
+        "@nestjs/event-emitter": "^3.0.1",
+        "@nestjs/testing": "^11.0.11",
         "@rws-framework/server": "^3.10.8",
         "@types/jsonwebtoken": "^9.0.9",
         "bullmq": "^5.41.7",
+        "jest": "^29.7.0",
         "xlsx-parse-stream": "^1.1.0"
     },
     "devDependencies": {
-        "@types/multer": "^1.4.12"
+        "@jest/globals": "^29.7.0",
+        "@types/multer": "^1.4.12",
+        "ts-jest": "^29.2.6"
     }
 }

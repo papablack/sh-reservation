@@ -17,11 +17,16 @@ export interface IReservationData {
     check_out_date: Date;
 }
 
+export interface XLSFileResults{
+    results: BookingDTO[], 
+    errors: IXLSXProcessError[]
+}
+
 @Injectable()
 export class XLSService {
     private logger = new Logger(this.constructor.name);
 
-    async processXLSXFile(filePath: string): Promise<{results: BookingDTO[], errors: IXLSXProcessError[]}> {
+    async processXLSXFile(filePath: string): Promise<XLSFileResults> {
         const errors: IXLSXProcessError[] = [];
         let rowNumber = 0;        
 

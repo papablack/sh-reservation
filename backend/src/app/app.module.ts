@@ -22,6 +22,8 @@ import { TaskService } from '../services/TaskService';
 import { BullModule } from '@nestjs/bullmq';
 import { TaskProcessor } from '../processors/task.processor';
 import { FileStorageService } from '../services/FileStorageService';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { BookingController } from '../controllers/booking.controller';
 
 
 @Module({})
@@ -36,7 +38,8 @@ export class TheAppModule {
       }),
       BullModule.registerQueue({
         name: 'tasks'
-      })
+      }),
+      EventEmitterModule.forRoot()
     ];
 
     const processedImports = parentModule ? [parentModule, ...imports] : imports;
@@ -47,7 +50,8 @@ export class TheAppModule {
       controllers:[
         HomeController,   
         UserController,
-        TaskController
+        TaskController,
+        BookingController
       ],
       providers: [
         AuthService, 

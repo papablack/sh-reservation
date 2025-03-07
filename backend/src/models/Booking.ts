@@ -7,7 +7,7 @@ import User from './User';
 import Task from './Task';
 import { BookingDTO } from './dto/booking.dto';
 
-@RWSResource('sh.booking')
+@RWSResource('booking')
 @RWSCollection('booking', { relations: { assignee: true } })
 class Booking extends RWSModel<Booking> implements IBooking {
     static BookingStatus = BookingStatus;

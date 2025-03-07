@@ -5,11 +5,16 @@ import { BookingDTO, parseBooking } from '../models/dto/booking.dto';
 import User from '../models/User';
 import Booking from '../models/Booking';
 import { FileStorageService } from './FileStorageService';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class TaskService {
     private logger = new Logger(this.constructor.name);
-    constructor(private xlsService: XLSService, private fileService: FileStorageService){}
+    constructor(
+        private xlsService: XLSService, 
+        private fileService: FileStorageService,
+        private eventEmitter: EventEmitter2
+    ){}
 
     async makeTask(fileName: string, originalFileName: string, user: User): Promise<Task>
     {
@@ -20,6 +25,9 @@ export class TaskService {
         });
 
         await task.save();
+        
+        // Emit task added event
+        this.eventEmitter.emit('task.added', task);
 
         return task;
     }
@@ -39,12 +47,18 @@ export class TaskService {
             task.status = Task.TaskStatus.DONE;
 
             await task.save();
+            
+            // Emit task processed event
+            this.eventEmitter.emit('task.processed', task);
         }catch(e: Error | any){
             task.errors = [{
                 row: -1,
                 error: e.message                
             }];
             await task.save();
+            
+            // Emit task processed event even on error
+            this.eventEmitter.emit('task.processed', task);
         }
     }
 

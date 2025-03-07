@@ -88,5 +88,45 @@ export class HomeController {
                     error: error.message || 'An error occurred during login'
                 };
             }
-    }   
+    }
+    
+    @RWSRoute('home.check')    
+    async authCheck( @Body() body: { token: string }): Promise<IUserLoginApiResponse>
+    {                  
+        try {
+            if (!body.token) {
+                return {
+                    success: false,
+                    data: null,
+                    error: 'Token is required'
+                };
+            }
+    
+            const authResult = await this.authService.verifyToken(body.token);
+            
+            if (!authResult) {
+                return {
+                    success: false,
+                    data: null,
+                    error: 'Invalid credentials'
+                };
+            }
+
+            const user: IUser = await this.authService.getUserFromToken(body.token);
+
+            return {
+                success: true,
+                data: {
+                    user: user,
+                    token: body.token
+                }
+            };
+        } catch (error: Error | any) {
+            return {
+                success: false,
+                data: null,
+                error: error.message || 'An error occurred during login'
+            };
+        }
+    }    
 }

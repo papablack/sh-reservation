@@ -14,18 +14,15 @@ import { FileStorageService } from '../services/FileStorageService';
 
 
 
-@RWSController('task', () => Task)
-export class TaskController extends RWSAutoApiController {    
+@RWSController('task')
+export class TaskController {    
     private logger = new Logger(this.constructor.name);
 
     constructor(
-        private xlsService: XLSService, 
         private queueService: QueueService, 
         private taskService: TaskService,
         private fileStorageService: FileStorageService
-    ){
-        super();
-    }
+    ){}
 
     @RWSRoute('task.process')
     @UseInterceptors(FileInterceptor('file'))
@@ -60,8 +57,18 @@ export class TaskController extends RWSAutoApiController {
     @RWSRoute('task.status')
     async statusAction(@Param('taskId') taskId: string)
     {
-        return {
-            success: true
+        const task = await Task.find(taskId);
+        
+        if (!task) {
+            return {
+                success: false,
+                error: 'Task not found'
+            };
         }
+        
+        return {
+            success: true,
+            data: task
+        };
     }
 }

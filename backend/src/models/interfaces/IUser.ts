@@ -1,4 +1,4 @@
-import IApiKey from "./IApiKey";
+import {IApiKey} from "./IApiKey";
 
 export interface IUser {
   id?: string
