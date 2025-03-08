@@ -1,69 +1,71 @@
 import { IsString, IsEnum, IsDate, IsNotEmpty, IsNumber } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 import { BookingStatus } from '../interfaces/IBooking';
 
 export class BookingDTO {
     @IsString()
     @IsNotEmpty()
-    @Transform(({ value }) => {
-        if (!value || typeof value !== 'string' || value.trim() === '') {
-            throw new Error('Guest name cannot be empty');
-        }
-        return value.trim();
-    })
+    @Transform(({ value }) => value?.trim() ?? '')
     guest_name: string;
 
     @IsNumber()
-    @Transform(({ value }) => {
-        const num = Number(value);
-        if (isNaN(num)) {
-            throw new Error('Reservation ID must be a valid number');
-        }
-        return num;
-    })
     @IsNotEmpty()
+    @Transform(({ value }) => Number(value))
     reservation_id: number;
 
-    @IsEnum(BookingStatus)
-    @IsNotEmpty()
-    @Transform(({ value }) => {
-        if (!value) {
-            throw new Error('Status is required');
-        }
-        if (!Object.values(BookingStatus).includes(value)) {
-            throw new Error(`Invalid status. Must be one of: ${Object.values(BookingStatus).join(', ')}`);
-        }
-        return value;
+    @IsEnum(BookingStatus, {
+        message: `status must be one one of given values: ${Object.values(BookingStatus).map(it => `"${it}"`).join(', ')}`
     })
+    @IsNotEmpty()
     status: BookingStatus;
 
     @IsDate()
     @IsNotEmpty()
-    @Transform(({ value }) => {
-        const date = new Date(value);
-        if (isNaN(date.getTime())) {
-            throw new Error('Invalid check-in date format');
-        }
-        return date;
-    })
     @Type(() => Date)
     check_in_date: Date;
 
     @IsDate()
     @IsNotEmpty()
-    @Transform(({ value }) => {
-        const date = new Date(value);
-        if (isNaN(date.getTime())) {
-            throw new Error('Invalid check-out date format');
-        }
-        return date;
-    })
     @Type(() => Date)
     check_out_date: Date;
 }
 
-export function parseBooking(reservationData: Record<string, any>): BookingDTO
-{
-    return plainToClass(BookingDTO, reservationData);
+export async function parseBooking(reservationData: Record<string, any>): Promise<{ booking: BookingDTO | null, errors: string[] }> {
+    try {
+        const booking = plainToClass(BookingDTO, reservationData);
+        const validationErrors = await validate(booking);
+
+        if (validationErrors.length > 0) {
+            const errors = validationErrors.map(error => {
+                const constraints = error.constraints || {};
+                return Object.values(constraints);
+            }).flat();
+
+            return {
+                booking: null,
+                errors
+            };
+        }
+
+        if (booking.check_in_date && booking.check_out_date) {
+            if (booking.check_in_date >= booking.check_out_date) {
+                return {
+                    booking: null,
+                    errors: ['check_in_date must be before check-out date']
+                };
+            }
+        }
+
+        return {
+            booking,
+            errors: []
+        };
+    } catch (error) {
+        return {
+            booking: null,
+            errors: [error instanceof Error ? error.message : 'Unknown validation error']
+        };
+    }
 }

@@ -6,6 +6,7 @@ import User from '../models/User';
 import Booking from '../models/Booking';
 import { FileStorageService } from './FileStorageService';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { TaskStatus } from '../models/interfaces/ITask';
 
 @Injectable()
 export class TaskService {
@@ -35,6 +36,10 @@ export class TaskService {
     async runTask(taskId: string): Promise<void>
     {
         const task = await Task.find(taskId);
+
+        task.status = TaskStatus.IN_PROGRESS;
+        await task.save();
+
         try {
             const xlsData = await this.xlsService.processXLSXFile(this.fileService.getFilePath(task.fileName));
 
@@ -44,7 +49,12 @@ export class TaskService {
             }
 
             task.errors = xlsData.errors;
-            task.status = Task.TaskStatus.DONE;
+            
+            if(task.errros.length){
+                task.status = TaskStatus.FAILED;
+            }else{
+                task.status = TaskStatus.COMPLETED;
+            }
 
             await task.save();
             

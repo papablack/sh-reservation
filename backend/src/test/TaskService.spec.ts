@@ -6,7 +6,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import Task from '../models/Task';
 import Booking from '../models/Booking';
 import User from '../models/User';
-import { BookingDTO } from '../models/dto/booking.dto';
+import { BookingDTO, parseBooking } from '../models/dto/booking.dto';
 import { BookingStatus as BookStatusEnum } from '../models/interfaces/IBooking';
 import { describe, expect, it, beforeEach, afterEach, jest } from '@jest/globals';
 
@@ -16,9 +16,10 @@ jest.mock('../models/Task', () => {
     __esModule: true,
     default: class MockTask {
       static TaskStatus: Record<string, string> = {
-        AWAITING: 'awaiting',
-        CANCELLED: 'cancelled',
-        DONE: 'done'
+        PENDING: 'pending',
+        IN_PROGRESS: 'in_progress',
+        COMPLETED: 'completed',
+        FAILED: 'failed'
       };
 
       assignee: any;
@@ -30,7 +31,7 @@ jest.mock('../models/Task', () => {
       constructor(data: any) {
         Object.assign(this, data);
         this.errors = [];
-        this.status = MockTask.TaskStatus.AWAITING;
+        this.status = MockTask.TaskStatus.PENDING;
       }
 
       save = jest.fn().mockImplementation(async () => Promise.resolve());
@@ -156,16 +157,17 @@ describe('TaskService', () => {
     it('should process an XLSX file and create bookings', async () => {
       const taskId = '1337hireme';
       const filePath = '/path/to/file.xlsx';
+      const bookingData = {
+        reservation_id: 456,
+        guest_name: 'New Guest',
+        status: BookStatusEnum.AWAITING,
+        check_in_date: new Date(),
+        check_out_date: new Date(Date.now() + 86400000) // tomorrow
+      };
+      
+      const { booking } = await parseBooking(bookingData);
       const xlsData: XLSFileResults = {
-        results: [
-          {
-            reservation_id: 456,
-            guest_name: 'New Guest',
-            status: BookStatusEnum.AWAITING,
-            check_in_date: new Date(),
-            check_out_date: new Date(Date.now() + 86400000) // tomorrow
-          }
-        ],
+        results: [booking],
         errors: []
       };
 
@@ -202,20 +204,21 @@ describe('TaskService', () => {
   describe('processReservations', () => {
     it('should create a new booking when status is AWAITING', async () => {
       const task = await Task.find('1337hireme');
-      const resData: BookingDTO = {
+      const reservationData = {
         reservation_id: 456,
         guest_name: 'New Guest',
         status: BookStatusEnum.AWAITING,
         check_in_date: new Date(),
         check_out_date: new Date(Date.now() + 86400000) // tomorrow
       };
-
-      const result = await service.processReservations(resData, task);
+      
+      const { booking } = await parseBooking(reservationData);
+      const result = await service.processReservations(booking, task);
 
       expect(result).toBeDefined();
-      expect(result?.reservation_id).toBe(resData.reservation_id);
-      expect(result?.guest_name).toBe(resData.guest_name);
-      expect(result?.status).toBe(resData.status);
+      expect(result?.reservation_id).toBe(reservationData.reservation_id);
+      expect(result?.guest_name).toBe(reservationData.guest_name);
+      expect(result?.status).toBe(reservationData.status);
       expect(result?.assignee).toBe(task.assignee);
       expect(result?.fromTask).toBe(task);
       expect(result?.save).toHaveBeenCalled();
@@ -224,42 +227,44 @@ describe('TaskService', () => {
 
     it('should update an existing booking when it exists', async () => {
       const task = await Task.find('1337hireme');
-      const resData: BookingDTO = {
+      const reservationData = {
         reservation_id: 123, // This ID exists in our mock
         guest_name: 'Updated Guest Name',
         status: BookStatusEnum.CANCELLED,
         check_in_date: new Date(),
         check_out_date: new Date(Date.now() + 86400000) // tomorrow
       };
-
-      const result = await service.processReservations(resData, task);
+      
+      const { booking } = await parseBooking(reservationData);
+      const result = await service.processReservations(booking, task);
 
       expect(result).toBeDefined();
       expect(Booking.findOneBy).toHaveBeenCalledWith({ 
-        conditions: { reservation_id: resData.reservation_id } 
+        conditions: { reservation_id: reservationData.reservation_id } 
       });
-      expect(result?._fill).toHaveBeenCalledWith(resData);
+      expect(result?._fill).toHaveBeenCalledWith(booking);
       expect(result?.save).toHaveBeenCalled();
     });
 
     it('should return null when booking does not exist and status is not AWAITING', async () => {
       // Arrange
       const task = await Task.find('1337hireme');
-      const resData: BookingDTO = {
+      const reservationData = {
         reservation_id: 789,
         guest_name: 'Non-existent Guest',
         status: BookStatusEnum.CANCELLED,
         check_in_date: new Date(),
         check_out_date: new Date(Date.now() + 86400000)
       };
-
+      
+      const { booking } = await parseBooking(reservationData);
       jest.spyOn(Booking, 'findOneBy').mockResolvedValueOnce(null);
 
-      const result = await service.processReservations(resData, task);
+      const result = await service.processReservations(booking, task);
 
       expect(result).toBeNull();
       expect(Booking.findOneBy).toHaveBeenCalledWith({ 
-        conditions: { reservation_id: resData.reservation_id } 
+        conditions: { reservation_id: reservationData.reservation_id } 
       });
     });
   });

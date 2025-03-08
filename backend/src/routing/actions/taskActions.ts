@@ -10,5 +10,10 @@ export const taskRoutes: IHTTProute[] = [
         name: 'task.status',
         path: '/status/:taskId',
         method: 'GET'                
-    }                  
+    },
+    {
+        name: 'task.report',
+        path: '/report/:taskId',
+        method: 'GET'                
+    }                          
 ]

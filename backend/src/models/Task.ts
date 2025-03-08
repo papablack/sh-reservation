@@ -11,7 +11,7 @@ export default class Task extends RWSModel<Task> implements ITask {
     static TaskStatus = TaskStatus;
 
     @TrackType(String)
-    status: TaskStatus = TaskStatus.AWAITING;
+    status: TaskStatus = TaskStatus.PENDING;
 
     @InverseRelation(() => Booking, () => Task)
     bookings: Booking[] = []

@@ -53,15 +53,19 @@ export class XLSService {
     
                 parser.on('data', (row: Record<string, any>) => {
                     rowNumber++;
-                    try {                                                                   
-                        results.push(parseBooking(row));
-                    } catch (error: any) {
-                        this.logger.warn(`Error processing row ${rowNumber}: ${error.message}`);
-                        errors.push({
-                            row: rowNumber,
-                            error: error.message
-                        });
-                    }
+                    parseBooking(row).then((dtoInfo) => {
+                        if(dtoInfo.errors.length){
+                            dtoInfo.errors.forEach(error => {
+                                this.logger.warn(`Error processing row ${rowNumber}: ${error}`);
+                                errors.push({
+                                    row: rowNumber,                                    
+                                    error: error
+                                });
+                            })                          
+                        }else{
+                            results.push(dtoInfo.booking);
+                        }  
+                    })          
                 });
     
                 parser.on('error', (error: Error) => {

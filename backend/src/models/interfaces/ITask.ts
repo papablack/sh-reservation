@@ -2,9 +2,10 @@ import { IXLSXProcessError } from "../../services/XLSService";
 import { IUser } from "../interfaces/IUser";
 
 export enum TaskStatus {
-    AWAITING = 'awaiting',
-    CANCELLED = 'cancelled',
-    DONE = 'done'
+    PENDING = 'pending',
+    IN_PROGRESS = 'in_progress',
+    COMPLETED = 'completed',
+    FAILED = 'failed'
 }
 
 export interface ITask {

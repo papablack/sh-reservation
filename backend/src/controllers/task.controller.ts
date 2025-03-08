@@ -1,12 +1,10 @@
-import { Body, Logger, UseInterceptors } from '@nestjs/common';
+import { Logger, UseInterceptors } from '@nestjs/common';
 import { Param, UploadedFile } from '@nestjs/common';
 import { RWSRoute, RWSController } from '@rws-framework/server/nest';
 import { Auth, AuthUser } from '../guards/auth.guard';
 import Task from '../models/Task';
-import { RWSAutoApiController } from '@rws-framework/server';
 import { FileInterceptor } from '@nestjs/platform-express';
 import User from '../models/User';
-import { XLSService } from '../services/XLSService';
 import { ITaskProcessApiResponse } from './response-types/ITaskApiResponse';
 import { QueueService } from '../services/QueueService';
 import { TaskService } from '../services/TaskService';
@@ -68,7 +66,30 @@ export class TaskController {
         
         return {
             success: true,
-            data: task
+            data: {
+                status: task.status,
+                errors: task.errors
+            }
+        };
+    }
+
+    @RWSRoute('task.report')
+    async reportAction(@Param('taskId') taskId: string)
+    {
+        const task = await Task.find(taskId);
+        
+        if (!task) {
+            return {
+                success: false,
+                error: 'Task not found'
+            };
+        }
+        
+        return {
+            success: true,
+            data: {                              
+                errors: task.errors
+            }
         };
     }
 }
