@@ -30,7 +30,7 @@
   "include": [
     "src",
     "../node_modules/@rws-framework/browser-router",
-    "../@dev/client/src",
+    "../node_modules/@rws-framework/client/src",
     "../node_modules/@rws-framework/nest-interconnectors",
     "../node_modules/@rws-framework/server",
     "../node_modules/@rws-framework/db",
